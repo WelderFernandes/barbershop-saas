@@ -9,7 +9,7 @@ const prismaClientSingleton = () => {
   });
   const adapter = new PrismaPg(pool);
   return new PrismaClient({ adapter });
-};3
+};
 
 
 declare global {
