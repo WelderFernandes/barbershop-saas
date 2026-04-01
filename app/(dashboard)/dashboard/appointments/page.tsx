@@ -14,13 +14,27 @@ export default async function AppointmentsPage() {
   const serializedAppointments = appointments.map((apt) => ({
     ...apt,
     date: apt.date.toISOString(),
+    createdAt: apt.createdAt.toISOString(),
+    updatedAt: apt.updatedAt.toISOString(),
+  }));
+
+  const serializedBarbers = barbers.map((b) => ({
+    ...b,
+    createdAt: b.createdAt.toISOString(),
+    updatedAt: b.updatedAt.toISOString(),
+  }));
+
+  const serializedServices = services.map((s) => ({
+    ...s,
+    createdAt: s.createdAt.toISOString(),
+    updatedAt: s.updatedAt.toISOString(),
   }));
 
   return (
     <AppointmentsList
       appointments={serializedAppointments}
-      barbers={barbers}
-      services={services}
+      barbers={serializedBarbers}
+      services={serializedServices}
     />
   );
 }

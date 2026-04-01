@@ -10,13 +10,21 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
-        <header className="sticky top-0 z-40 flex h-14 items-center gap-2 border-b bg-background/95 px-4 backdrop-blur supports-backdrop-filter:bg-background/60">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <h1 className="text-sm font-medium">BarberPro</h1>
+      <SidebarInset className="bg-background">
+        <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-background/80 px-6 backdrop-blur-md transition-all">
+          <SidebarTrigger className="-ml-1 h-9 w-9 rounded-none hover:bg-accent" />
+          <Separator orientation="vertical" className="h-6 w-[1.5px] bg-border" />
+          <div className="flex flex-1 items-center justify-between">
+            <h1 className="font-heading text-lg font-black uppercase tracking-widest text-primary">
+              Barber <span className="text-foreground">Shop</span>
+            </h1>
+            <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-tighter text-muted-foreground">
+              <span className="h-2 w-2 animate-pulse bg-emerald-500" />
+              System Online
+            </div>
+          </div>
         </header>
-        <main className="flex-1 p-4 md:p-6">{children}</main>
+        <main className="flex-1 p-6 lg:p-10">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );

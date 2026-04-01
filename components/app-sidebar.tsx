@@ -21,7 +21,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const navItems = [
   { title: "Dashboard", href: "/dashboard", icon: "📊" },
@@ -55,26 +54,34 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar>
-      <SidebarHeader className="border-b px-4 py-3">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">✂️</span>
-          <span className="text-lg font-bold">BarberPro</span>
+    <Sidebar className="border-r-0 ring-1 ring-border">
+      <SidebarHeader className="border-b border-border/50 bg-sidebar px-6 py-8">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center border-2 border-primary bg-transparent text-xl font-bold">
+            B
+          </div>
+          <div className="flex flex-col">
+            <span className="font-heading text-sm font-black uppercase tracking-tighter">BarberPro</span>
+            <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground/60 line-through decoration-primary/50 decoration-2">Management</span>
+          </div>
         </div>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="bg-sidebar px-2 py-4">
         <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
+          <SidebarGroupLabel className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground/40">
+            Navegação
+          </SidebarGroupLabel>
+          <SidebarGroupContent className="mt-4">
+            <SidebarMenu className="gap-1">
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton
-                    render={<Link href={item.href} />}
+                    render={<Link href={item.href} className="flex items-center gap-3" />}
                     isActive={pathname === item.href}
+                    className="h-12 rounded-none px-4 font-mono text-[11px] uppercase tracking-widest transition-all hover:bg-primary hover:text-primary-foreground data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
                   >
-                    <span>{item.icon}</span>
+                    <span className="text-base grayscale group-hover:grayscale-0">{item.icon}</span>
                     <span>{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -84,24 +91,23 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t p-2">
+      <SidebarFooter className="border-t border-border/50 bg-sidebar p-4">
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm hover:bg-sidebar-accent">
-            <Avatar className="h-7 w-7">
-              <AvatarFallback className="bg-primary/10 text-xs font-medium">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-            <span className="truncate text-sm">
-              {session?.user?.name ?? "Usuário"}
-            </span>
+          <DropdownMenuTrigger className="flex w-full items-center gap-3 border border-border/50 bg-transparent px-3 py-3 text-sm transition-all hover:border-primary">
+            <div className="flex h-8 w-8 items-center justify-center border border-primary bg-primary/10 font-mono text-xs font-bold text-primary">
+              {initials}
+            </div>
+            <div className="flex flex-1 flex-col items-start overflow-hidden text-[10px] uppercase tracking-widest">
+              <span className="truncate font-bold italic">{session?.user?.name ?? "Usuário"}</span>
+              <span className="text-[8px] opacity-50">Authorized Personnel</span>
+            </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent side="top" align="start" className="w-56">
+          <DropdownMenuContent side="top" align="start" className="w-56 rounded-none border-2 border-primary bg-card p-1 font-mono text-[10px] uppercase tracking-widest">
             <DropdownMenuItem
               onClick={handleSignOut}
-              className="text-destructive focus:text-destructive"
+              className="rounded-none py-2 focus:bg-destructive focus:text-destructive-foreground"
             >
-              Sair
+              Terminate Session [ESC]
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

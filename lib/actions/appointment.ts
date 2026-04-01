@@ -62,7 +62,7 @@ export async function getAppointments(filters?: {
   return prisma.appointment.findMany({
     where,
     include: {
-      barber: { select: { id: true, name: true } },
+      barber: { select: { id: true, name: true, avatarUrl: true } },
       service: { select: { id: true, name: true, price: true, duration: true } },
     },
     orderBy: { date: "asc" },
@@ -105,7 +105,7 @@ export async function createAppointment(
       barbershopId: tenantId,
     },
     include: {
-      barber: { select: { id: true, name: true } },
+      barber: { select: { id: true, name: true, avatarUrl: true } },
       service: { select: { id: true, name: true, price: true, duration: true } },
     },
   });
