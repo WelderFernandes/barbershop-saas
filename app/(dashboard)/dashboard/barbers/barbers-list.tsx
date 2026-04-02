@@ -26,6 +26,7 @@ type Barber = {
   name: string;
   phone: string | null;
   isActive: boolean;
+  userId?: string | null;
 };
 
 export function BarbersList({ barbers }: { barbers: Barber[] }) {
@@ -62,9 +63,13 @@ export function BarbersList({ barbers }: { barbers: Barber[] }) {
           </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger render={<Button onClick={handleNew} />}>
-            + Novo
-          </DialogTrigger>
+          <DialogTrigger
+            render={
+              <Button onClick={handleNew} className="rounded-md px-6">
+                + Novo
+              </Button>
+            }
+          />
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>
@@ -107,15 +112,23 @@ export function BarbersList({ barbers }: { barbers: Barber[] }) {
                       </p>
                     )}
                   </div>
-                  <Badge variant={barber.isActive ? "default" : "secondary"}>
-                    {barber.isActive ? "Ativo" : "Inativo"}
-                  </Badge>
+                  <div className="flex flex-col items-end gap-1">
+                    <Badge variant={barber.isActive ? "default" : "secondary"}>
+                      {barber.isActive ? "Ativo" : "Inativo"}
+                    </Badge>
+                    {barber.userId && (
+                      <Badge variant="outline" className="border-primary text-primary text-[8px] uppercase tracking-widest font-black rounded-full px-2">
+                        Membro do Time
+                      </Badge>
+                    )}
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="flex gap-2 pt-0">
                 <Button
                   variant="outline"
                   size="sm"
+                  className="rounded-xl"
                   onClick={() => handleEdit(barber)}
                 >
                   Editar
@@ -147,6 +160,7 @@ function BarberForm({
 }) {
   const [name, setName] = useState(barber?.name ?? "");
   const [phone, setPhone] = useState(barber?.phone ?? "");
+  const [userId, setUserId] = useState(barber?.userId ?? "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -161,11 +175,13 @@ function BarberForm({
           id: barber.id,
           name,
           phone: phone || undefined,
+          userId: userId || undefined,
         });
       } else {
         await createBarber({
           name,
           phone: phone || undefined,
+          userId: userId || undefined,
         });
       }
       onSuccess();
@@ -192,7 +208,7 @@ function BarberForm({
           onChange={(e) => setName(e.target.value)}
           required
           minLength={2}
-          className="h-11"
+          className="h-11 rounded-xl"
         />
       </div>
 
@@ -205,13 +221,29 @@ function BarberForm({
           type="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          className="h-11"
+          className="h-11 rounded-xl"
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="barber-userId">
+          ID do Usuário <span className="text-muted-foreground">(vincula conta ao time)</span>
+        </Label>
+        <Input
+          id="barber-userId"
+          value={userId}
+          onChange={(e) => setUserId(e.target.value)}
+          placeholder="user_id..."
+          className="h-11 font-mono text-xs rounded-xl"
+        />
+        <p className="text-[10px] text-muted-foreground italic">
+          Opcional: vincule este barbeiro a uma conta de usuário existente.
+        </p>
       </div>
 
       <Button
         type="submit"
-        className="h-11 w-full font-semibold"
+        className="h-11 w-full font-semibold rounded-xl"
         disabled={loading}
       >
         {loading ? "Salvando..." : barber ? "Salvar alterações" : "Cadastrar"}

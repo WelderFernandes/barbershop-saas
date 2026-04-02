@@ -11,6 +11,7 @@ import { requireTenant } from "@/lib/tenant";
 const createBarberSchema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   phone: z.string().optional(),
+  userId: z.string().optional(),
 });
 
 const updateBarberSchema = z.object({
@@ -18,6 +19,7 @@ const updateBarberSchema = z.object({
   name: z.string().min(2).optional(),
   phone: z.string().optional(),
   isActive: z.boolean().optional(),
+  userId: z.string().optional(),
 });
 
 // ═══════════════════════════════════════════════════════
@@ -44,6 +46,7 @@ export async function createBarber(
       name: data.name,
       phone: data.phone,
       barbershopId: tenantId,
+      userId: data.userId,
     },
   });
 
@@ -68,6 +71,7 @@ export async function updateBarber(
       ...(data.name && { name: data.name }),
       ...(data.phone !== undefined && { phone: data.phone }),
       ...(data.isActive !== undefined && { isActive: data.isActive }),
+      ...(data.userId !== undefined && { userId: data.userId }),
     },
   });
 

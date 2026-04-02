@@ -1,4 +1,4 @@
-import { Geist_Mono, Inter, Playfair_Display } from "next/font/google"
+import { Geist_Mono, Inter, Playfair_Display, Poppins } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils";
 
@@ -12,6 +12,11 @@ const fontMono = Geist_Mono({
   variable: "--font-mono",
 })
 
+const poppins = Poppins({
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-poppins",
+})
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -21,7 +26,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, playfair.variable, inter.variable)}
+      className={cn("antialiased", poppins.variable, fontMono.variable, playfair.variable, inter.variable)}
     >
       <body>
         <ThemeProvider>{children}</ThemeProvider>

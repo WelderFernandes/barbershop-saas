@@ -3,7 +3,6 @@ import { getSession, getTenantId } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Appointment } from "@/generated/prisma/client";
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -26,17 +25,17 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-10">
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div className="flex flex-col gap-4 rounded-md md:flex-row md:items-end md:justify-between">
         <div className="space-y-1">
           <h2 className="font-heading text-4xl font-black uppercase tracking-tighter italic">
-            Command <span className="text-primary">Center</span>
+            Painel de <span className="text-primary">Controle</span>
           </h2>
           <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            Operational Intelligence // {new Date().toLocaleDateString('pt-BR')}
+            Inteligência Operacional // {new Date().toLocaleDateString('pt-BR')}
           </p>
         </div>
-        <div className="flex items-center gap-2 border-2 border-primary p-1">
-          <div className="bg-primary px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-widest text-primary-foreground">
+        <div className="flex items-center rounded-md gap-2 border-2 border-primary p-1">
+          <div className="bg-primary rounded-md px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-widest text-primary-foreground">
             Status
           </div>
           <div className="px-4 font-mono text-[10px] font-black uppercase tracking-widest">
@@ -45,14 +44,14 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 rounded-md">
         {[
           { title: "Total Agendamentos", value: totalAppointments, icon: "📅", label: "01 // Vol" },
           { title: "Agendamentos Hoje", value: todayAppointments.length, icon: "⚡", label: "02 // Now" },
           { title: "Geral Barbeiros", value: totalBarbers, icon: "💈", label: "03 // Op" },
           { title: "Geral Serviços", value: totalServices, icon: "✂️", label: "04 // Svc" },
         ].map((stat) => (
-          <div key={stat.title} className="group relative border border-border bg-card p-6 transition-all hover:border-primary">
+          <div key={stat.title} className="group rounded-md relative border border-border bg-card p-6 transition-all hover:border-primary">
             <div className="absolute top-0 right-0 p-2 font-mono text-[8px] font-bold text-muted-foreground/30">
               {stat.label}
             </div>
@@ -74,18 +73,18 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      <div className="border border-border bg-card">
+      <div className="border border-border bg-card rounded-md">
         <div className="flex items-center justify-between border-b border-border p-6">
           <div className="space-y-1">
-            <h3 className="font-heading text-2xl font-black uppercase tracking-tighter">
-              Active Queue
+            <h3 className="font-heading text-xl font-semibold uppercase tracking-tighter">
+              Agenda de Hoje
             </h3>
             <p className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground">
-              Recent Appointments Log
+              Atividades recentes
             </p>
           </div>
-          <Button variant="outline" className="rounded-none border-2 font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-primary-foreground">
-            View All Records
+          <Button variant="outline" className="rounded-md border-2 font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-primary-foreground">
+            Ver Todos os Registros
           </Button>
         </div>
 
@@ -142,7 +141,7 @@ export default async function DashboardPage() {
           ) : (
             <div className="flex h-40 items-center justify-center font-mono text-xs uppercase tracking-widest text-muted-foreground">
               {/* No Active Operations Found */}
-              // No Active Operations Found
+               No Active Operations Found
             </div>
           )}
         </div>

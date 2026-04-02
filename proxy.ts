@@ -9,7 +9,7 @@ function isPublicRoute(pathname: string): boolean {
   );
 }
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Permitir rotas públicas e assets estáticos
@@ -17,17 +17,38 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Verificar cookie de sessão do Better Auth
-  const sessionToken =
-    request.cookies.get("better-auth.session_token")?.value;
+  // Verificar sessão via API interna do Better Auth
+  // O Proxy/Middleware roda no Edge, então usamos fetch padrão.
+  try {
+    const response = await fetch(new URL("/api/auth/get-session", request.url), {
+      headers: {
+        cookie: request.headers.get("cookie") || "",
+      },
+    });
 
-  if (!sessionToken) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("callbackUrl", pathname);
-    return NextResponse.redirect(loginUrl);
+    const session = await response.json().catch(() => null);
+
+    if (!session || !session.session) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    // Lógica Multi-Tenant: Garantir organização ativa no Dashboard
+    const isDashboard = pathname.startsWith("/dashboard");
+    const isOnboarding = pathname.startsWith("/dashboard/onboarding");
+
+    if (isDashboard && !isOnboarding) {
+      if (!session.session.activeOrganizationId) {
+        return NextResponse.redirect(new URL("/dashboard/onboarding", request.url));
+      }
+    }
+
+    return NextResponse.next();
+  } catch (error) {
+    console.error("Proxy error:", error);
+    return NextResponse.next();
   }
-
-  return NextResponse.next();
 }
 
 export const config = {

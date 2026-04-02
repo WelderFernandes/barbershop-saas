@@ -1,5 +1,6 @@
 {
     "cSpell.words": [
         "Hugeicons"
-    ]
+    ],
+    "prisma.pinToPrisma6": true
 }

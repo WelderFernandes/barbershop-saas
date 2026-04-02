@@ -21,6 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { OrganizationSwitcher } from "./organization-switcher";
 
 const navItems = [
   { title: "Dashboard", href: "/dashboard", icon: "📊" },
@@ -55,16 +56,17 @@ export function AppSidebar() {
 
   return (
     <Sidebar className="border-r-0 ring-1 ring-border">
-      <SidebarHeader className="border-b border-border/50 bg-sidebar px-6 py-8">
-        <div className="flex items-center gap-3">
+      <SidebarHeader className="border-b border-border/50 bg-sidebar px-4 pb-4 pt-6">
+        <div className="flex items-center gap-3 mb-6 px-2">
           <div className="flex h-10 w-10 items-center justify-center border-2 border-primary bg-transparent text-xl font-bold">
             B
           </div>
           <div className="flex flex-col">
-            <span className="font-heading text-sm font-black uppercase tracking-tighter">BarberPro</span>
+            <span className="font-heading text-sm font-black uppercase tracking-tighter text-primary">BarberPro</span>
             <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground/60 line-through decoration-primary/50 decoration-2">Management</span>
           </div>
         </div>
+        <OrganizationSwitcher />
       </SidebarHeader>
 
       <SidebarContent className="bg-sidebar px-2 py-4">

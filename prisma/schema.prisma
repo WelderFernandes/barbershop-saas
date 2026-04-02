@@ -1,16 +1,11 @@
-
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
-
-// ═══════════════════════════════════════════════════════
-// BETTER AUTH — tabelas gerenciadas pelo framework
-// ═══════════════════════════════════════════════════════
 
 model User {
   id            String   @id @default(cuid())
@@ -24,30 +19,75 @@ model User {
   sessions Session[]
   accounts Account[]
 
-  // Relação com barbearias que o usuário é dono
   ownedBarbershops Barbershop[]
 
-  // Better Auth — membros de organizações
   members     Member[]
   invitations Invitation[]
+
+  barberProfile Barber?
+  teamMembers   TeamMember[]
 
   @@map("user")
 }
 
-model Session {
-  id                   String   @id @default(cuid())
-  expiresAt            DateTime
-  token                String   @unique
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
-  ipAddress            String?
-  userAgent            String?
-  userId               String
-  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  activeOrganizationId String?
+model OrganizationRole {
+  id             String       @id @default(cuid())
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+  role           String
+  permission     String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime?    @updatedAt
 
-  @@map("session")
+  @@map("organizationRole")
+}
+
+model Team {
+  id             String       @id @default(cuid())
+  name           String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime?    @updatedAt
+
+  members     Member[]
+  invitations Invitation[]
+  teamMembers TeamMember[]
+
+  @@index([organizationId])
+  @@map("team")
+}
+
+model TeamMember {
+  id        String    @id
+  team      Team      @relation(fields: [teamId], references: [id])
+  teamId    String
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@index([teamId])
   @@index([userId])
+  @@map("teamMember")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  activeOrganizationId String?
+  activeTeamId         String?
+
+  @@index([userId])
+  @@map("session")
 }
 
 model Account {
@@ -66,8 +106,8 @@ model Account {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
-  @@map("account")
   @@index([userId])
+  @@map("account")
 }
 
 model Verification {
@@ -78,13 +118,9 @@ model Verification {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  @@map("verification")
   @@index([identifier])
+  @@map("verification")
 }
-
-// ═══════════════════════════════════════════════════════
-// BETTER AUTH — Organization (Multi-Tenant)
-// ═══════════════════════════════════════════════════════
 
 model Organization {
   id        String   @id @default(cuid())
@@ -97,8 +133,9 @@ model Organization {
   members     Member[]
   invitations Invitation[]
 
-  // Relação com a barbearia (1:1)
-  barbershop Barbershop?
+  barbershop        Barbershop?
+  organizationRoles OrganizationRole[]
+  teams             Team[]
 
   @@map("organization")
 }
@@ -111,10 +148,12 @@ model Member {
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   role           String       @default("member")
   createdAt      DateTime     @default(now())
+  team           Team?        @relation(fields: [teamId], references: [id])
+  teamId         String?
 
-  @@map("member")
   @@index([organizationId])
   @@index([userId])
+  @@map("member")
 }
 
 model Invitation {
@@ -129,15 +168,13 @@ model Invitation {
   inviter        User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
+  teamId    String?
+  team      Team?    @relation(fields: [teamId], references: [id])
 
-  @@map("invitation")
   @@index([organizationId])
   @@index([email])
+  @@map("invitation")
 }
-
-// ═══════════════════════════════════════════════════════
-// DOMÍNIO — Entidades de Negócio (Multi-Tenant)
-// ═══════════════════════════════════════════════════════
 
 model Barbershop {
   id        String   @id @default(cuid())
@@ -149,15 +186,12 @@ model Barbershop {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Dono da barbearia
   ownerId String
   owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
-  // Vínculo com organização Better Auth (1:1)
   organizationId String       @unique
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
-  // Relações de negócio
   barbers      Barber[]
   services     Service[]
   appointments Appointment[]
@@ -175,9 +209,11 @@ model Barber {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Tenant isolation
   barbershopId String
   barbershop   Barbershop @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
+
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   appointments Appointment[]
 
@@ -188,13 +224,12 @@ model Service {
   id          String   @id @default(cuid())
   name        String
   description String?
-  price       Int // Preço em centavos (ex: R$35,00 = 3500)
-  duration    Int // Duração em minutos
+  price       Int
+  duration    Int
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // Tenant isolation
   barbershopId String
   barbershop   Barbershop @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
 
@@ -213,13 +248,11 @@ model Appointment {
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
 
-  // Relações
   barberId  String
   barber    Barber  @relation(fields: [barberId], references: [id], onDelete: Cascade)
   serviceId String
   service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
-  // Tenant isolation
   barbershopId String
   barbershop   Barbershop @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
 
@@ -245,7 +278,6 @@ model Subscription {
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
 
-  // Tenant isolation (1:1 com Barbershop)
   barbershopId String     @unique
   barbershop   Barbershop @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
 
