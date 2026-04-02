@@ -103,9 +103,9 @@ export function AppointmentsList({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedBarber, setSelectedBarber] = useState("all");
-  const [selectedStatus, setSelectedStatus] = useState("all");
-  const [selectedService, setSelectedService] = useState("all");
+  const [selectedBarber, setSelectedBarber] = useState("Todos");
+  const [selectedStatus, setSelectedStatus] = useState("Todos");
+  const [selectedService, setSelectedService] = useState("Todos");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [newAppointmentOpen, setNewAppointmentOpen] = useState(false);
@@ -134,9 +134,9 @@ export function AppointmentsList({
     return appointments.filter((apt) => {
       const d = new Date(apt.date);
       const matchesDate = d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
-      const matchesBarber = selectedBarber === "all" || apt.barberId === selectedBarber;
-      const matchesStatus = selectedStatus === "all" || apt.status === selectedStatus;
-      const matchesService = selectedService === "all" || apt.serviceId === selectedService;
+      const matchesBarber = selectedBarber === "Todos" || apt.barberId === selectedBarber;
+      const matchesStatus = selectedStatus === "Todos" || apt.status === selectedStatus;
+      const matchesService = selectedService === "Todos" || apt.serviceId === selectedService;
       const matchesSearch = apt.clientName.toLowerCase().includes(searchTerm.toLowerCase());
       
       return matchesDate && matchesBarber && matchesStatus && matchesService && matchesSearch;
@@ -209,26 +209,26 @@ export function AppointmentsList({
       {/* Header com Filtros */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <Select value={selectedBarber} onValueChange={(val: string | null) => setSelectedBarber(val ?? 'all')}>
+          <Select value={selectedBarber} onValueChange={(val: string | null) => setSelectedBarber(val ?? 'Todos')}>
             <SelectTrigger className="w-[150px]">
               <SelectValue placeholder="Barbeiro" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos os Barbeiros</SelectItem>
+              <SelectItem value="Todos">Todos os Barbeiros</SelectItem>
               {barbers.map((barber) => (
-                <SelectItem key={barber.id} value={barber.id}>
+                <SelectItem key={barber.id} value={barber.name}>
                   {barber.name}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
 
-          <Select value={selectedStatus} onValueChange={(val: string | null) => setSelectedStatus(val ?? 'all')}>
+          <Select value={selectedStatus} onValueChange={(val: string | null) => setSelectedStatus(val ?? 'Todos')}>
             <SelectTrigger className="w-[130px]">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos Status</SelectItem>
+              <SelectItem value="Todos">Todos Status</SelectItem>
               <SelectItem value="SCHEDULED">Agendado</SelectItem>
               <SelectItem value="CONFIRMED">Confirmado</SelectItem>
               <SelectItem value="IN_PROGRESS">Em Atendimento</SelectItem>
@@ -238,14 +238,14 @@ export function AppointmentsList({
             </SelectContent>
           </Select>
 
-          <Select value={selectedService} onValueChange={(val: string | null) => setSelectedService(val ?? 'all')}>
+          <Select value={selectedService} onValueChange={(val: string | null) => setSelectedService(val ?? 'Todos')}>
             <SelectTrigger className="w-[150px]">
               <SelectValue placeholder="Serviço" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos Serviços</SelectItem>
+              <SelectItem value="Todos">Todos Serviços</SelectItem>
               {services.map((service) => (
-                <SelectItem key={service.id} value={service.id}>
+                <SelectItem key={service.id} value={service.name}>
                   {service.name}
                 </SelectItem>
               ))}

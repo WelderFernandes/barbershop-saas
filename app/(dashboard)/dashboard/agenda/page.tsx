@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Input } from '@/components/ui/input'
@@ -44,23 +44,21 @@ import { cn } from '@/lib/utils'
 import { AppointmentStatusBadge } from '@/components/status-badge'
 import { Appointment } from '@/lib/types'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { 
-  Add01Icon, 
-  ArrowLeft01Icon, 
-  ArrowRight01Icon, 
-  Calendar01Icon, 
-  Clock01Icon, 
-  MoreHorizontalIcon, 
-  PencilEdit01Icon, 
-  Tick02Icon, 
-  Cancel01Icon,
-  Search01Icon,
-  FilterIcon,
-  LayoutGridIcon,
-  AlignLeftIcon,
-  Call02Icon,
-  Mail01Icon,
-  StarIcon
+import {
+    Add01Icon,
+    ArrowLeft01Icon,
+    ArrowRight01Icon,
+    Calendar01Icon,
+    Clock01Icon,
+    MoreHorizontalIcon,
+    PencilEdit01Icon,
+    Tick02Icon,
+    Cancel01Icon,
+    Search01Icon,
+    FilterIcon,
+    LayoutGridIcon,
+    AlignLeftIcon,
+    Call02Icon, StarIcon
 } from '@hugeicons/core-free-icons'
 
 const timeSlots = Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, '0')}:00`)

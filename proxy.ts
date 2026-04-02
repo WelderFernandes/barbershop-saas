@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // Rotas públicas que não precisam de autenticação
-const publicRoutes = ["/", "/login", "/signup", "/api/auth"];
+const publicRoutes = ["/", "/login", "/signup", "/api/auth", "/book"];
 
 function isPublicRoute(pathname: string): boolean {
   return publicRoutes.some(
@@ -10,7 +10,32 @@ function isPublicRoute(pathname: string): boolean {
 }
 
 export async function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const url = request.nextUrl;
+  const { pathname } = url;
+  const host = request.headers.get("host") || "";
+
+  // Lógica de Subdomínio Multi-Tenant
+  // Detecta se existe um subdomínio (ex: unidade.localhost:3000 ou unidade.barber.sh)
+  const hostname = host.split(":")[0];
+  const domainParts = hostname.split(".");
+  const isLocalhost = hostname === "localhost" || hostname.endsWith(".localhost");
+  
+  let subdomain = "";
+  if (isLocalhost) {
+    if (domainParts.length > 1) subdomain = domainParts[0];
+  } else {
+    // Para domínios de produção como barber.sh, o subdominio seria a terceira parte de trás pra frente ou algo similar
+    // Ex: unidade.barber.sh -> parts=["unidade", "barber", "sh"] -> length=3
+    if (domainParts.length > 2) subdomain = domainParts.slice(0, -2).join(".");
+  }
+
+  // Se houver subdominio e não for uma rota técnica
+  if (subdomain && !pathname.startsWith("/api") && !pathname.startsWith("/_next") && !pathname.startsWith("/static")) {
+    // Reescrever internamente para /book/[slug]
+    // A URL no navegador continuará sendo 'unidade.localhost:3000/' 
+    // mas o Next.js renderizará a página de 'app/(public)/book/[slug]'
+    return NextResponse.rewrite(new URL(`/book/${subdomain}${pathname}`, request.url));
+  }
 
   // Permitir rotas públicas e assets estáticos
   if (isPublicRoute(pathname)) {
@@ -18,7 +43,6 @@ export async function proxy(request: NextRequest) {
   }
 
   // Verificar sessão via API interna do Better Auth
-  // O Proxy/Middleware roda no Edge, então usamos fetch padrão.
   try {
     const response = await fetch(new URL("/api/auth/get-session", request.url), {
       headers: {
@@ -53,13 +77,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all routes except:
-     * - _next/static (static files)
-     * - _next/image (image optimization)
-     * - favicon.ico
-     * - public files (images, etc.)
-     */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
