@@ -16,14 +16,15 @@ export default function DashboardLayout({
       <AppSidebar />
       <SidebarInset className="bg-background">
         <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-background/80 px-6 backdrop-blur-md transition-all">
-          <SidebarTrigger className="-ml-1 h-9 w-9 rounded-none hover:bg-accent" />
+          <SidebarTrigger className="-ml-1 w-9 rounded-none hover:bg-accent" />
           <Separator
             orientation="vertical"
-            className="h-6 w-[1.5px] bg-border"
+            className="h-16 w-[1.5px] bg-border"
           />
+
           <div className="flex flex-1 items-center justify-between">
             <h1 className="font-heading text-lg font-black tracking-widest text-primary uppercase">
-              Barber <span className="text-foreground">Shop</span>
+              Barber <span className="text-foreground">Shop</span> PRO
             </h1>
             <div className="flex items-center gap-2 font-mono text-[10px] tracking-tighter text-muted-foreground uppercase">
               <span className="h-2 w-2 animate-pulse bg-emerald-500" />

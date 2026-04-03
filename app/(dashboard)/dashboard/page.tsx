@@ -41,10 +41,10 @@ export default async function DashboardPage() {
         </div>
         <div className="flex items-center gap-2 rounded-md border-2 border-primary p-1">
           <div className="rounded-md bg-primary px-4 py-2 font-mono text-[10px] font-bold tracking-widest text-primary-foreground uppercase">
-            Status
+            Operador
           </div>
           <div className="px-4 font-mono text-[10px] font-black tracking-widest uppercase">
-            Optimal Performance
+            {session?.user?.name}
           </div>
         </div>
       </div>

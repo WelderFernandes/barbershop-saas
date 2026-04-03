@@ -44,6 +44,11 @@ export default function OnboardingPage() {
     }
   }
 
+  if (session && session.session?.activeOrganizationId) {
+    router.push("/dashboard")
+    router.refresh()
+  }
+
   return (
     <div className="flex h-[calc(100vh-80px)] items-center justify-center">
       <Card className="w-full max-w-xl rounded-md border border-primary/10 bg-background p-0 shadow-xl">
@@ -66,7 +71,8 @@ export default function OnboardingPage() {
               </div>
             )}
 
-            <div className="space-y-4">
+            <div className="space-y-4 overflow-auto">
+              <pre>{JSON.stringify(session, null, 2)}</pre>
               <div className="space-y-2">
                 <Label
                   htmlFor="org-name"

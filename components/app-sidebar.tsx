@@ -58,19 +58,6 @@ export function AppSidebar() {
   return (
     <Sidebar className="border-r-0 ring-1 ring-border">
       <SidebarHeader className="border-b border-border/50 bg-sidebar px-4 pt-6 pb-4">
-        <div className="mb-6 flex items-center gap-3 px-2">
-          <div className="flex h-10 w-10 items-center justify-center border-2 border-primary bg-transparent text-xl font-bold">
-            B
-          </div>
-          <div className="flex flex-col">
-            <span className="font-heading text-sm font-black tracking-tighter text-primary uppercase">
-              BarberPro
-            </span>
-            <span className="font-mono text-[10px] tracking-widest text-muted-foreground/60 uppercase line-through decoration-primary/50 decoration-2">
-              Sistema Integrado
-            </span>
-          </div>
-        </div>
         <OrganizationSwitcher />
       </SidebarHeader>
 
@@ -111,7 +98,7 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t border-border/50 bg-sidebar p-4">
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex w-full items-center gap-3 border border-border/50 bg-transparent px-3 py-3 text-sm transition-all hover:border-primary">
+          <DropdownMenuTrigger className="flex w-full items-center gap-3 rounded-2xl border border-border/50 bg-transparent px-3 py-3 text-sm transition-all hover:border-primary">
             <div className="flex h-8 w-8 items-center justify-center border border-primary bg-primary/10 font-mono text-xs font-bold text-primary">
               {initials}
             </div>
@@ -119,21 +106,21 @@ export function AppSidebar() {
               <span className="truncate font-bold italic">
                 {session?.user?.name ?? "Usuário"}
               </span>
-              <span className="text-[8px] opacity-50">
-                Authorized Personnel
+              <span className="truncate text-[8px] opacity-50">
+                {session?.user.email}
               </span>
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             side="top"
             align="start"
-            className="w-56 rounded-none border-2 border-primary bg-card p-1 font-mono text-[10px] tracking-widest uppercase"
+            className="w-56 rounded-2xl border-2 border-primary bg-card p-1 font-mono text-[10px] tracking-widest uppercase"
           >
             <DropdownMenuItem
               onClick={handleSignOut}
-              className="focus:text-destructive-foreground rounded-none py-2 focus:bg-destructive"
+              className="focus:text-destructive-foreground rounded-2xl py-2 focus:bg-destructive"
             >
-              Terminate Session [ESC]
+              Sair [ESC]
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
