@@ -3,6 +3,7 @@ import { getSession, getTenantId } from "@/lib/tenant"
 import { prisma } from "@/lib/prisma"
 import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { Widget } from "./_components/widget"
 
 export default async function DashboardPage() {
   const session = await getSession()
@@ -30,24 +31,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-10">
-      <div className="flex flex-col gap-4 rounded-md md:flex-row md:items-end md:justify-between">
-        <div className="space-y-1">
-          <h2 className="font-heading text-4xl font-black tracking-tighter uppercase italic">
-            Painel de <span className="text-primary">Controle</span>
-          </h2>
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground uppercase">
-            Inteligência Operacional // {new Date().toLocaleDateString("pt-BR")}
-          </p>
-        </div>
-        <div className="flex items-center gap-2 rounded-md border-2 border-primary p-1">
-          <div className="rounded-md bg-primary px-4 py-2 font-mono text-[10px] font-bold tracking-widest text-primary-foreground uppercase">
-            Operador
-          </div>
-          <div className="px-4 font-mono text-[10px] font-black tracking-widest uppercase">
-            {session?.user?.name}
-          </div>
-        </div>
-      </div>
+      <Widget />
 
       <div className="grid gap-6 rounded-md md:grid-cols-2 lg:grid-cols-4">
         {[

@@ -196,6 +196,9 @@ model Barbershop {
   appointments Appointment[]
   subscription Subscription?
 
+  businessHours BusinessHour[]
+  blockedSlots  BlockedSlot[]
+
   @@map("barbershop")
 }
 
@@ -215,8 +218,54 @@ model Barber {
   user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   appointments Appointment[]
+  blockedSlots BlockedSlot[]
 
   @@map("barber")
+}
+
+model BusinessHour {
+  id           String     @id @default(cuid())
+  dayOfWeek    Int        // 0 (Dom) to 6 (Sab)
+  openTime     String?    // Null means closed
+  closeTime    String?
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  barbershopId String
+  barbershop   Barbershop @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
+
+  @@index([barbershopId])
+  @@map("businessHour")
+}
+
+model BlockedSlot {
+  id           String         @id @default(cuid())
+  startTime    DateTime
+  endTime      DateTime
+  reason       String?
+  recurrence   RecurrenceType @default(NONE)
+  recurringUntil DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  barberId     String?
+  barber       Barber?        @relation(fields: [barberId], references: [id], onDelete: Cascade)
+
+  barbershopId String
+  barbershop   Barbershop     @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
+
+  @@index([barbershopId])
+  @@index([barberId])
+  @@map("blockedSlot")
+}
+
+enum RecurrenceType {
+  NONE
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
 }
 
 model Service {
@@ -250,7 +299,7 @@ model Appointment {
   barberId  String
   barber    Barber  @relation(fields: [barberId], references: [id], onDelete: Cascade)
   serviceId String
-  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  service   Service    @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
   barbershopId String
   barbershop   Barbershop @relation(fields: [barbershopId], references: [id], onDelete: Cascade)

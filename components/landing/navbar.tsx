@@ -19,6 +19,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
+import { AnimatedThemeToggler } from "../ui/animated-theme-toggler"
 
 const navItems = [
   { title: "Benefícios", href: "#benefits" },
@@ -82,6 +83,7 @@ export function Navbar() {
           </NavigationMenu>
 
           <div className="flex items-center gap-4">
+            <AnimatedThemeToggler />
             <Link href="/login" className="hidden md:block">
               <Button variant="ghost" className="font-medium">
                 Entrar

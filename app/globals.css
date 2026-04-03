@@ -117,7 +117,6 @@
     --sidebar-ring: oklch(0.85 0.15 85);
 }
 
-
 /* :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -240,4 +239,9 @@
   html {
     @apply font-sans;
     }
+}
+
+::view-transition-old(root), ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
 }
