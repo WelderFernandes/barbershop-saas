@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireTenant } from "@/lib/tenant";
+import { checkAvailability } from "./availability";
 
 // ═══════════════════════════════════════════════════════
 // Schemas de validação
@@ -93,6 +94,13 @@ export async function createAppointment(
 
   if (!barber) throw new Error("Barbeiro não encontrado");
   if (!service) throw new Error("Serviço não encontrado");
+
+  // Validar disponibilidade real
+  await checkAvailability({
+    barberId: data.barberId,
+    startTime: new Date(data.date),
+    durationInMinutes: service.duration,
+  });
 
   const appointment = await prisma.appointment.create({
     data: {

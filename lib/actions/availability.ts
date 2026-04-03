@@ -292,3 +292,112 @@ export async function getAvailableSlots(params: {
 
   return slots;
 }
+
+/**
+ * Motor de Validação Centralizado
+ * Lança um erro se o horário não estiver disponível.
+ */
+export async function checkAvailability(params: {
+  barberId: string;
+  startTime: Date;
+  durationInMinutes: number;
+}) {
+  const { tenantId } = await requireTenant();
+  const { barberId, startTime, durationInMinutes } = params;
+  
+  const endTime = new Date(startTime.getTime() + durationInMinutes * 60000);
+  const dayOfWeek = startTime.getDay();
+
+  // 1. Validar Horário de Funcionamento
+  const businessHour = await prisma.businessHour.findFirst({
+    where: {
+      barbershopId: tenantId,
+      dayOfWeek,
+      isActive: true,
+    },
+  });
+
+  if (!businessHour || !businessHour.openTime || !businessHour.closeTime) {
+    throw new Error("A barbearia está fechada neste dia.");
+  }
+
+  // Converter horários para minutos desde 00:00 para comparação fácil
+  const [openH, openM] = businessHour.openTime.split(":").map(Number);
+  const [closeH, closeM] = businessHour.closeTime.split(":").map(Number);
+  const openMinutes = openH * 60 + openM;
+  const closeMinutes = closeH * 60 + closeM;
+
+  const startMinutes = startTime.getHours() * 60 + startTime.getMinutes();
+  const endMinutes = endTime.getHours() * 60 + endTime.getMinutes();
+
+  if (startMinutes < openMinutes || endMinutes > closeMinutes) {
+    throw new Error(`Fora do horário de funcionamento (${businessHour.openTime} - ${businessHour.closeTime}).`);
+  }
+
+  // 2. Validar Bloqueios (BlockedSlot)
+  const blockedSlots = await prisma.blockedSlot.findMany({
+    where: {
+      barbershopId: tenantId,
+      AND: [
+        { OR: [{ barberId: null }, { barberId }] },
+        {
+          OR: [
+            { recurrence: "NONE", endTime: { gte: startTime } },
+            {
+              recurrence: { not: "NONE" },
+              OR: [
+                { recurringUntil: null },
+                { recurringUntil: { gte: startTime } },
+              ],
+            },
+          ],
+        },
+      ],
+      startTime: { lte: endTime },
+    },
+  });
+
+  for (const slot of blockedSlots) {
+    if (slot.recurrence === "NONE") {
+      if (slot.startTime < endTime && slot.endTime > startTime) {
+        throw new Error(`Este horário está bloqueado: ${slot.reason || "Bloqueio manual"}.`);
+      }
+    } else {
+      // Validação simplificada de recorrência (mesmo horário do dia)
+      const blockStartH = slot.startTime.getHours();
+      const blockStartM = slot.startTime.getMinutes();
+      const blockEndH = slot.endTime.getHours();
+      const blockEndM = slot.endTime.getMinutes();
+
+      const blockTimeStart = blockStartH * 60 + blockStartM;
+      const blockTimeEnd = blockEndH * 60 + blockEndM;
+
+      if (startMinutes < blockTimeEnd && endMinutes > blockTimeStart) {
+        throw new Error(`Este horário possui um bloqueio recorrente: ${slot.reason || "Bloqueio de rotina"}.`);
+      }
+    }
+  }
+
+  // 3. Validar Sobreposição de Agendamentos (Double Booking)
+  const overlappingAppointment = await prisma.appointment.findFirst({
+    where: {
+      barberId,
+      barbershopId: tenantId,
+      status: { notIn: ["CANCELLED"] },
+      date: {
+        gte: new Date(startTime.getTime() - 60 * 60000), // margem de segurança de 1h antes para busca otimizada
+        lte: new Date(endTime.getTime() + 60 * 60000),  // margem de segurança de 1h depois
+      },
+    },
+    include: { service: { select: { duration: true } } }
+  });
+
+  if (overlappingAppointment) {
+    const aptStart = overlappingAppointment.date;
+    const aptEnd = new Date(aptStart.getTime() + overlappingAppointment.service.duration * 60000);
+
+    if (aptStart < endTime && aptEnd > startTime) {
+      throw new Error(`O barbeiro selecionado já possui um agendamento das ${aptStart.toLocaleTimeString("pt-BR", {hour: "2-digit", minute: "2-digit"})} às ${aptEnd.toLocaleTimeString("pt-BR", {hour: "2-digit", minute: "2-digit"})}.`);
+    }
+  }
+}

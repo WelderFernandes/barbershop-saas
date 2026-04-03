@@ -75,5 +75,23 @@ export interface DashboardMetrics {
   clientsGrowth: number
 }
 
-export type AppointmentStatus = Appointment['status']
-export type PlanType = Barbershop['plan']
+export type AppointmentStatus = Appointment["status"]
+export type PlanType = Barbershop["plan"]
+
+export interface BusinessHour {
+  id: string
+  dayOfWeek: number
+  openTime: string | null
+  closeTime: string | null
+  isActive: boolean
+}
+
+export interface BlockedSlot {
+  id: string
+  startTime: string
+  endTime: string
+  reason?: string | null
+  recurrence: "NONE" | "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY"
+  barberId?: string | null
+  barber?: { id: string; name: string } | null
+}

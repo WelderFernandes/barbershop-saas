@@ -1,13 +1,16 @@
 import { getAppointments } from "@/lib/actions/appointment";
 import { getBarbers } from "@/lib/actions/barber";
 import { getServices } from "@/lib/actions/service";
+import { getBusinessHours, getBlockedSlots } from "@/lib/actions/availability";
 import { AppointmentsList } from "./appointments-list";
 
 export default async function AppointmentsPage() {
-  const [appointments, barbers, services] = await Promise.all([
+  const [appointments, barbers, services, businessHours, blockedSlots] = await Promise.all([
     getAppointments(),
     getBarbers(),
     getServices(),
+    getBusinessHours(),
+    getBlockedSlots(),
   ]);
 
   // Serialize dates for client component
@@ -30,11 +33,23 @@ export default async function AppointmentsPage() {
     updatedAt: s.updatedAt.toISOString(),
   }));
 
+  const serializedBlockedSlots = blockedSlots.map((s) => ({
+    ...s,
+    startTime: s.startTime.toISOString(),
+    endTime: s.endTime.toISOString(),
+  }));
+
+  const serializedBusinessHours = businessHours.map((bh) => ({
+    ...bh,
+  }));
+
   return (
     <AppointmentsList
       appointments={serializedAppointments}
       barbers={serializedBarbers}
       services={serializedServices}
+      businessHours={serializedBusinessHours}
+      blockedSlots={serializedBlockedSlots}
     />
   );
 }

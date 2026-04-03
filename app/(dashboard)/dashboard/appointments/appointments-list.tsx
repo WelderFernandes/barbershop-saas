@@ -46,7 +46,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 import { AppointmentStatusBadge } from "@/components/status-badge"
-import { Appointment, Barber, Service } from "@/lib/types"
+import { Appointment, Barber, Service, BusinessHour, BlockedSlot } from "@/lib/types"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Add01Icon,
@@ -103,10 +103,14 @@ export function AppointmentsList({
   appointments,
   barbers,
   services,
+  businessHours,
+  blockedSlots,
 }: {
   appointments: Appointment[]
   barbers: Barber[]
   services: Service[]
+  businessHours: BusinessHour[]
+  blockedSlots: BlockedSlot[]
 }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -505,160 +509,202 @@ export function AppointmentsList({
                         {hour}
                       </div>
                       <div className="flex flex-1 flex-col gap-2 p-3">
-                        {hourAppointments.length > 0 ? (
-                          hourAppointments.map((appointment) => (
-                            <div
-                              key={appointment.id}
-                              className={cn(
-                                "flex w-full cursor-pointer items-center justify-between rounded-xl border p-4 transition-all hover:shadow-md",
-                                appointment.status === "CANCELLED"
-                                  ? "border-muted bg-muted/50 opacity-60"
-                                  : "border-border bg-card hover:border-accent/50"
-                              )}
-                              onClick={() =>
-                                setSelectedAppointment(appointment)
-                              }
-                            >
-                              <div className="flex items-center gap-4">
-                                <Avatar className="h-10 w-10 border-2 border-background">
-                                  <AvatarFallback className="bg-accent/10 font-semibold text-accent">
-                                    {appointment.clientName
-                                      .split(" ")
-                                      .map((n) => n[0])
-                                      .join("")}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div>
-                                  <div className="flex items-center gap-2">
-                                    <h4 className="font-semibold">
-                                      {appointment.clientName}
-                                    </h4>
-                                    <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground uppercase">
-                                      {new Date(
-                                        appointment.date
-                                      ).toLocaleTimeString("pt-BR", {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      })}
-                                    </span>
+                        {(() => {
+                          // 1. Verificar se é um agendamento real
+                          if (hourAppointments.length > 0) {
+                            return hourAppointments.map((appointment) => (
+                              <div
+                                key={appointment.id}
+                                className={cn(
+                                  "flex w-full cursor-pointer items-center justify-between rounded-xl border p-4 transition-all hover:shadow-md",
+                                  appointment.status === "CANCELLED"
+                                    ? "border-muted bg-muted/50 opacity-60"
+                                    : "border-border bg-card hover:border-accent/50"
+                                )}
+                                onClick={() => setSelectedAppointment(appointment)}
+                              >
+                                <div className="flex items-center gap-4">
+                                  <Avatar className="h-10 w-10 border-2 border-background">
+                                    <AvatarFallback className="bg-accent/10 font-semibold text-accent">
+                                      {appointment.clientName
+                                        .split(" ")
+                                        .map((n) => n[0])
+                                        .join("")}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <div>
+                                    <div className="flex items-center gap-2">
+                                      <h4 className="font-semibold">{appointment.clientName}</h4>
+                                      <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground uppercase">
+                                        {new Date(appointment.date).toLocaleTimeString("pt-BR", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                        })}
+                                      </span>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">
+                                      {appointment.service.name} • {appointment.barber.name}
+                                    </p>
                                   </div>
-                                  <p className="text-xs text-muted-foreground">
-                                    {appointment.service.name} •{" "}
-                                    {appointment.barber.name}
-                                  </p>
                                 </div>
-                              </div>
-                              <div className="flex items-center gap-4">
-                                <div className="hidden text-right sm:block">
-                                  <p className="text-sm font-bold text-accent">
-                                    {formatPrice(appointment.service.price)}
-                                  </p>
-                                  <p className="text-[10px] tracking-wider text-muted-foreground uppercase">
-                                    {appointment.service.duration} min
-                                  </p>
-                                </div>
-                                <AppointmentStatusBadge
-                                  status={appointment.status}
-                                  className="hidden sm:flex"
-                                />
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger
-                                    render={
-                                      <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-8 w-8"
-                                        onClick={(e) => e.stopPropagation()}
-                                      >
-                                        <HugeiconsIcon
-                                          icon={MoreHorizontalIcon}
-                                          className="h-4 w-4"
-                                        />
-                                      </Button>
-                                    }
+                                <div className="flex items-center gap-4">
+                                  <div className="hidden text-right sm:block">
+                                    <p className="text-sm font-bold text-accent">
+                                      {formatPrice(appointment.service.price)}
+                                    </p>
+                                    <p className="text-[10px] tracking-wider text-muted-foreground uppercase">
+                                      {appointment.service.duration} min
+                                    </p>
+                                  </div>
+                                  <AppointmentStatusBadge
+                                    status={appointment.status}
+                                    className="hidden sm:flex"
                                   />
-                                  <DropdownMenuContent align="end">
-                                    <DropdownMenuItem
-                                      onClick={() =>
-                                        setSelectedAppointment(appointment)
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger
+                                      render={
+                                        <Button
+                                          variant="ghost"
+                                          size="icon"
+                                          className="h-8 w-8"
+                                          onClick={(e) => e.stopPropagation()}
+                                        >
+                                          <HugeiconsIcon
+                                            icon={MoreHorizontalIcon}
+                                            className="h-4 w-4"
+                                          />
+                                        </Button>
                                       }
-                                    >
-                                      <HugeiconsIcon
-                                        icon={PencilEdit01Icon}
-                                        className="mr-2 h-4 w-4"
-                                      />
-                                      Detalhes
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                      onClick={() =>
-                                        handleStatusChange(
-                                          appointment.id,
-                                          "CONFIRMED"
-                                        )
-                                      }
-                                    >
-                                      <HugeiconsIcon
-                                        icon={Tick02Icon}
-                                        className="mr-2 h-4 w-4"
-                                      />
-                                      Confirmar
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem
-                                      className="text-destructive focus:text-destructive"
-                                      onClick={() =>
-                                        handleStatusChange(
-                                          appointment.id,
-                                          "CANCELLED"
-                                        )
-                                      }
-                                    >
-                                      <HugeiconsIcon
-                                        icon={Cancel01Icon}
-                                        className="mr-2 h-4 w-4"
-                                      />
-                                      Cancelar
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                      className="text-destructive focus:text-destructive"
-                                      onClick={() =>
-                                        handleDelete(appointment.id)
-                                      }
-                                    >
-                                      <HugeiconsIcon
-                                        icon={Cancel01Icon}
-                                        className="mr-2 h-4 w-4"
-                                      />
-                                      Excluir
-                                    </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
+                                    />
+                                    <DropdownMenuContent align="end">
+                                      <DropdownMenuItem
+                                        onClick={() => setSelectedAppointment(appointment)}
+                                      >
+                                        <HugeiconsIcon icon={PencilEdit01Icon} className="mr-2 h-4 w-4" />
+                                        Detalhes
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem
+                                        onClick={() =>
+                                          handleStatusChange(appointment.id, "CONFIRMED")
+                                        }
+                                      >
+                                        <HugeiconsIcon icon={Tick02Icon} className="mr-2 h-4 w-4" />
+                                        Confirmar
+                                      </DropdownMenuItem>
+                                      <DropdownMenuSeparator />
+                                      <DropdownMenuItem
+                                        className="text-destructive focus:text-destructive"
+                                        onClick={() =>
+                                          handleStatusChange(appointment.id, "CANCELLED")
+                                        }
+                                      >
+                                        <HugeiconsIcon icon={Cancel01Icon} className="mr-2 h-4 w-4" />
+                                        Cancelar
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem
+                                        className="text-destructive focus:text-destructive"
+                                        onClick={() => handleDelete(appointment.id)}
+                                      >
+                                        <HugeiconsIcon icon={Cancel01Icon} className="mr-2 h-4 w-4" />
+                                        Excluir
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                </div>
                               </div>
+                            ))
+                          }
+
+                          // 2. Verificar Horário de Funcionamento
+                          const dayOfWeek = selectedDate.getDay()
+                          const businessHour = businessHours.find((bh) => bh.dayOfWeek === dayOfWeek)
+                          
+                          if (!businessHour || !businessHour.isActive || !businessHour.openTime || !businessHour.closeTime) {
+                            return (
+                              <div className="flex w-full items-center justify-between rounded-xl border border-dashed bg-muted/10 p-4 opacity-50">
+                                <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                                  Estabelecimento Fechado
+                                </span>
+                              </div>
+                            )
+                          }
+
+                          const [hourH, hourM] = hour.split(":").map(Number)
+                          const [openH, openM] = businessHour.openTime.split(":").map(Number)
+                          const [closeH, closeM] = businessHour.closeTime.split(":").map(Number)
+
+                          const hourTotal = hourH * 60 + hourM
+                          const openTotal = openH * 60 + openM
+                          const closeTotal = closeH * 60 + closeM
+
+                          if (hourTotal < openTotal || hourTotal >= closeTotal) {
+                            return (
+                              <div className="flex w-full items-center justify-between rounded-xl border border-dashed bg-muted/10 p-4 opacity-50">
+                                <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                                  Fora do Expediente
+                                </span>
+                              </div>
+                            )
+                          }
+
+                          // 3. Verificar Bloqueios de Agenda
+                          const startOfDay = new Date(selectedDate)
+                          startOfDay.setHours(0, 0, 0, 0)
+                          
+                          const hourDate = new Date(selectedDate)
+                          hourDate.setHours(hourH, hourM, 0, 0)
+
+                          const activeBlockedSlot = blockedSlots.find((slot) => {
+                            const slotStart = new Date(slot.startTime)
+                            const slotEnd = new Date(slot.endTime)
+                            
+                            // Somente se for para o barbeiro selecionado ou para todos
+                            const barberMatch = selectedBarber === "Todos" || (!slot.barberId) || (barbers.find(b => b.name === selectedBarber)?.id === slot.barberId)
+                            
+                            if (!barberMatch) return false
+
+                            // Verificação simplificada de horário (Recorrência não inclusa aqui para simplicidade de UI, apenas o slot real)
+                            return hourDate >= slotStart && hourDate < slotEnd
+                          })
+
+                          if (activeBlockedSlot) {
+                            return (
+                              <div className="flex w-full items-center justify-between rounded-xl border border-amber-200 bg-amber-50/50 p-4 text-amber-900">
+                                <div className="flex items-center gap-3">
+                                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100">
+                                    <HugeiconsIcon icon={Clock01Icon} className="h-4 w-4" />
+                                  </div>
+                                  <div>
+                                    <p className="text-xs font-bold uppercase tracking-wider">Horário Bloqueado</p>
+                                    <p className="text-[10px] opacity-70 italic">{activeBlockedSlot.reason || "Intervalo planejado"}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            )
+                          }
+
+                          // 4. Horário Livre
+                          return (
+                            <div className="flex w-full items-center justify-between opacity-0 transition-opacity group-hover:opacity-100">
+                              <span className="text-xs italic text-muted-foreground">
+                                Horário disponível
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-xs text-muted-foreground hover:text-foreground"
+                                onClick={() => {
+                                  setFormTime(hour)
+                                  setFormDate(formatDateToISO(selectedDate))
+                                  setNewAppointmentOpen(true)
+                                }}
+                              >
+                                <HugeiconsIcon icon={Add01Icon} className="mr-1 h-3 w-3" />
+                                Agendar
+                              </Button>
                             </div>
-                          ))
-                        ) : (
-                          <div className="flex w-full items-center justify-between opacity-0 transition-opacity group-hover:opacity-100">
-                            <span className="text-xs text-muted-foreground italic">
-                              Horário disponível
-                            </span>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-xs text-muted-foreground hover:text-foreground"
-                              onClick={() => {
-                                setFormTime(hour)
-                                setFormDate(formatDateToISO(selectedDate))
-                                setNewAppointmentOpen(true)
-                              }}
-                            >
-                              <HugeiconsIcon
-                                icon={Add01Icon}
-                                className="mr-1 h-3 w-3"
-                              />
-                              Agendar
-                            </Button>
-                          </div>
-                        )}
+                          )
+                        })()}
                       </div>
                     </div>
                   )
