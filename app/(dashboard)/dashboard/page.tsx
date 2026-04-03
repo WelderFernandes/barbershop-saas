@@ -3,7 +3,6 @@ import { getSession, getTenantId } from "@/lib/tenant"
 import { prisma } from "@/lib/prisma"
 import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Appointment, Barber } from "@/generated/prisma"
 
 export default async function DashboardPage() {
   const session = await getSession()
@@ -14,8 +13,9 @@ export default async function DashboardPage() {
   // Se não tem barbearia, redireciona para onboarding
   if (!tenantId) redirect("/onboarding")
 
-  type AppointmentWithRelations = Awaited<ReturnType<typeof getTodayAppointments>>[number]
-
+  type AppointmentWithRelations = Awaited<
+    ReturnType<typeof getTodayAppointments>
+  >[number]
 
   // Buscar dados do dashboard
   const [todayAppointments, totalBarbers, totalServices, totalAppointments] =
@@ -78,7 +78,7 @@ export default async function DashboardPage() {
         ].map((stat) => (
           <div
             key={stat.title}
-            className="group relative rounded-md border border-border bg-card p-6 transition-all hover:border-primary"
+            className="group relative rounded-md border border-border bg-card p-6 transition-all hover:cursor-pointer hover:border-primary"
           >
             <div className="absolute top-0 right-0 p-2 font-mono text-[8px] font-bold text-muted-foreground/30">
               {stat.label}
@@ -122,7 +122,6 @@ export default async function DashboardPage() {
         <div className="divide-y divide-border/50">
           {appointments.length > 0 ? (
             appointments.map((appointment: AppointmentWithRelations) => (
-
               <div
                 key={appointment.id}
                 className="group flex flex-col items-start gap-4 p-6 transition-colors hover:bg-muted/30 md:flex-row md:items-center"

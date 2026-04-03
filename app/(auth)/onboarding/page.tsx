@@ -1,11 +1,11 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createBarbershop } from "@/lib/actions/barbershop";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { createBarbershop } from "@/lib/actions/barbershop"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
   Card,
   CardContent,
@@ -13,37 +13,44 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui/card"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Store01Icon } from "@hugeicons/core-free-icons"
 
 export default function OnboardingPage() {
-  const router = useRouter();
-  const [barbershopName, setBarbershopName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const router = useRouter()
+  const [barbershopName, setBarbershopName] = useState("")
+  const [phone, setPhone] = useState("")
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+    e.preventDefault()
+    setError("")
+    setLoading(true)
 
     try {
       const result = await createBarbershop({
         name: barbershopName,
         phone: phone || undefined,
-      });
+      })
 
       if (result.success) {
-        router.push("/dashboard");
+        router.push("/dashboard")
       }
     } catch (err) {
       setError(
         err instanceof Error
           ? err.message
           : "Erro ao criar barbearia. Tente novamente."
-      );
+      )
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
@@ -54,11 +61,9 @@ export default function OnboardingPage() {
           <span className="text-xl">🏪</span>
         </div>
         <CardTitle className="text-2xl font-bold">
-          Configure sua barbearia
+          Configure sua Organização
         </CardTitle>
-        <CardDescription>
-          Informe os dados básicos para começar
-        </CardDescription>
+        <CardDescription>Informe os dados básicos para começar</CardDescription>
       </CardHeader>
 
       <form onSubmit={handleSubmit}>
@@ -71,22 +76,30 @@ export default function OnboardingPage() {
 
           <div className="space-y-2">
             <Label htmlFor="barbershopName">Nome da barbearia</Label>
-            <Input
-              id="barbershopName"
-              type="text"
-              placeholder="Ex: Barbearia do João"
-              value={barbershopName}
-              onChange={(e) => setBarbershopName(e.target.value)}
-              required
-              minLength={2}
-              className="h-11"
-            />
+            <InputGroup className="h-12 border-x-0 border-t-0 border-b-2 px-0 transition-all focus-visible:border-primary focus-visible:ring-0">
+              <InputGroupInput
+                id="barbershopName"
+                type="text"
+                placeholder="Ex: Barbearia do João"
+                value={barbershopName}
+                onChange={(e) => setBarbershopName(e.target.value)}
+                required
+                minLength={2}
+                className="h-11"
+              />
+              <InputGroupAddon align="inline-start">
+                <HugeiconsIcon
+                  icon={Store01Icon}
+                  size={22}
+                  className="text-primary"
+                />
+              </InputGroupAddon>
+            </InputGroup>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="phone">
-              Telefone{" "}
-              <span className="text-muted-foreground">(opcional)</span>
+              Telefone <span className="text-muted-foreground">(opcional)</span>
             </Label>
             <Input
               id="phone"
@@ -110,5 +123,5 @@ export default function OnboardingPage() {
         </CardFooter>
       </form>
     </Card>
-  );
+  )
 }

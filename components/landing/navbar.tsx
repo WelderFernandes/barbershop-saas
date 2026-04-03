@@ -12,7 +12,12 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+} from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 
 const navItems = [
@@ -36,16 +41,16 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "fixed top-0 z-50 w-full transition-all duration-300 border-b",
+        "fixed top-0 z-50 w-full border-b transition-all duration-300",
         isScrolled
-          ? "bg-background/80 backdrop-blur-md border-border py-3"
-          : "bg-transparent border-transparent py-5"
+          ? "border-border bg-background/80 py-3 backdrop-blur-md"
+          : "border-transparent bg-transparent py-5"
       )}
     >
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="bg-primary p-2 rounded-xl text-primary-foreground group-hover:scale-110 transition-transform">
+          <Link href="/" className="group flex items-center gap-2">
+            <div className="rounded-xl bg-primary p-2 text-primary-foreground transition-transform group-hover:scale-110">
               <HugeiconsIcon icon={Scissor01Icon} size={24} />
             </div>
             <span className="text-xl font-bold tracking-tight">
@@ -64,7 +69,7 @@ export function Navbar() {
                         href={item.href}
                         className={cn(
                           navigationMenuTriggerStyle(),
-                          "bg-transparent hover:bg-accent/50 transition-colors"
+                          "bg-transparent transition-colors hover:bg-accent/50"
                         )}
                       />
                     }
@@ -82,8 +87,8 @@ export function Navbar() {
                 Entrar
               </Button>
             </Link>
-            <Link href="/register">
-              <Button className="font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all gap-2">
+            <Link href="/signup">
+              <Button className="gap-2 font-bold shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40">
                 Começar agora
                 <HugeiconsIcon icon={ZapIcon} size={18} />
               </Button>
@@ -91,7 +96,11 @@ export function Navbar() {
 
             {/* Mobile Navigation */}
             <Sheet>
-              <SheetTrigger render={<Button variant="ghost" size="icon" className="md:hidden" />}>
+              <SheetTrigger
+                render={
+                  <Button variant="ghost" size="icon" className="md:hidden" />
+                }
+              >
                 <HugeiconsIcon icon={Menu01Icon} size={24} />
               </SheetTrigger>
               <SheetContent side="right" className="flex flex-col gap-8 pt-12">
@@ -101,19 +110,19 @@ export function Navbar() {
                     <Link
                       key={item.title}
                       href={item.href}
-                      className="text-lg font-medium hover:text-primary transition-colors"
+                      className="text-lg font-medium transition-colors hover:text-primary"
                     >
                       {item.title}
                     </Link>
                   ))}
                 </div>
-                <div className="flex flex-col gap-4 mt-auto pb-8">
+                <div className="mt-auto flex flex-col gap-4 pb-8">
                   <Link href="/login">
                     <Button variant="outline" className="w-full">
                       Entrar
                     </Button>
                   </Link>
-                  <Link href="/register">
+                  <Link href="/signup">
                     <Button className="w-full">Começar agora</Button>
                   </Link>
                 </div>

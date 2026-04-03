@@ -1,8 +1,8 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { signOut, useSession } from "@/lib/auth-client";
+import Link from "next/link"
+import { usePathname, useRouter } from "next/navigation"
+import { signOut, useSession } from "@/lib/auth-client"
 import {
   Sidebar,
   SidebarContent,
@@ -14,14 +14,15 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from "@/components/ui/sidebar"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { OrganizationSwitcher } from "./organization-switcher";
+} from "@/components/ui/dropdown-menu"
+import { OrganizationSwitcher } from "./organization-switcher"
+import { cn } from "@/lib/utils"
 
 const navItems = [
   { title: "Dashboard", href: "/dashboard", icon: "📊" },
@@ -29,12 +30,12 @@ const navItems = [
   { title: "Barbeiros", href: "/dashboard/barbers", icon: "💈" },
   { title: "Serviços", href: "/dashboard/services", icon: "✂️" },
   { title: "Configurações", href: "/dashboard/settings", icon: "⚙️" },
-];
+]
 
 export function AppSidebar() {
-  const pathname = usePathname();
-  const router = useRouter();
-  const { data: session } = useSession();
+  const pathname = usePathname()
+  const router = useRouter()
+  const { data: session } = useSession()
 
   const initials =
     session?.user?.name
@@ -42,28 +43,32 @@ export function AppSidebar() {
       .map((n) => n[0])
       .join("")
       .toUpperCase()
-      .slice(0, 2) ?? "U";
+      .slice(0, 2) ?? "U"
 
   function handleSignOut() {
     signOut({
       fetchOptions: {
         onSuccess: () => {
-          router.push("/login");
+          router.push("/login")
         },
       },
-    });
+    })
   }
 
   return (
     <Sidebar className="border-r-0 ring-1 ring-border">
-      <SidebarHeader className="border-b border-border/50 bg-sidebar px-4 pb-4 pt-6">
-        <div className="flex items-center gap-3 mb-6 px-2">
+      <SidebarHeader className="border-b border-border/50 bg-sidebar px-4 pt-6 pb-4">
+        <div className="mb-6 flex items-center gap-3 px-2">
           <div className="flex h-10 w-10 items-center justify-center border-2 border-primary bg-transparent text-xl font-bold">
             B
           </div>
           <div className="flex flex-col">
-            <span className="font-heading text-sm font-black uppercase tracking-tighter text-primary">BarberPro</span>
-            <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground/60 line-through decoration-primary/50 decoration-2">Management</span>
+            <span className="font-heading text-sm font-black tracking-tighter text-primary uppercase">
+              BarberPro
+            </span>
+            <span className="font-mono text-[10px] tracking-widest text-muted-foreground/60 uppercase line-through decoration-primary/50 decoration-2">
+              Sistema Integrado
+            </span>
           </div>
         </div>
         <OrganizationSwitcher />
@@ -71,7 +76,7 @@ export function AppSidebar() {
 
       <SidebarContent className="bg-sidebar px-2 py-4">
         <SidebarGroup>
-          <SidebarGroupLabel className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground/40">
+          <SidebarGroupLabel className="font-mono text-[9px] font-bold tracking-[0.2em] text-muted-foreground/40 uppercase">
             Navegação
           </SidebarGroupLabel>
           <SidebarGroupContent className="mt-4">
@@ -79,11 +84,22 @@ export function AppSidebar() {
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton
-                    render={<Link href={item.href} className="flex items-center gap-3" />}
+                    render={
+                      <Link
+                        href={item.href}
+                        className="flex items-center gap-3"
+                      />
+                    }
                     isActive={pathname === item.href}
-                    className="h-12 rounded-none px-4 font-mono text-[11px] uppercase tracking-widest transition-all hover:bg-primary hover:text-primary-foreground data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
+                    className={cn(
+                      "h-12 rounded-md px-4 font-mono text-[11px] tracking-widest uppercase",
+                      "transition-all hover:bg-primary hover:text-primary-foreground",
+                      "data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
+                    )}
                   >
-                    <span className="text-base grayscale group-hover:grayscale-0">{item.icon}</span>
+                    <span className="text-base grayscale group-hover:grayscale-0">
+                      {item.icon}
+                    </span>
                     <span>{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -99,15 +115,23 @@ export function AppSidebar() {
             <div className="flex h-8 w-8 items-center justify-center border border-primary bg-primary/10 font-mono text-xs font-bold text-primary">
               {initials}
             </div>
-            <div className="flex flex-1 flex-col items-start overflow-hidden text-[10px] uppercase tracking-widest">
-              <span className="truncate font-bold italic">{session?.user?.name ?? "Usuário"}</span>
-              <span className="text-[8px] opacity-50">Authorized Personnel</span>
+            <div className="flex flex-1 flex-col items-start overflow-hidden text-[10px] tracking-widest uppercase">
+              <span className="truncate font-bold italic">
+                {session?.user?.name ?? "Usuário"}
+              </span>
+              <span className="text-[8px] opacity-50">
+                Authorized Personnel
+              </span>
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent side="top" align="start" className="w-56 rounded-none border-2 border-primary bg-card p-1 font-mono text-[10px] uppercase tracking-widest">
+          <DropdownMenuContent
+            side="top"
+            align="start"
+            className="w-56 rounded-none border-2 border-primary bg-card p-1 font-mono text-[10px] tracking-widest uppercase"
+          >
             <DropdownMenuItem
               onClick={handleSignOut}
-              className="rounded-none py-2 focus:bg-destructive focus:text-destructive-foreground"
+              className="focus:text-destructive-foreground rounded-none py-2 focus:bg-destructive"
             >
               Terminate Session [ESC]
             </DropdownMenuItem>
@@ -115,5 +139,5 @@ export function AppSidebar() {
         </DropdownMenu>
       </SidebarFooter>
     </Sidebar>
-  );
+  )
 }

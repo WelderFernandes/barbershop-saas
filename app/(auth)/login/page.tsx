@@ -71,11 +71,11 @@ export default function LoginPage() {
       {/* Lado Esquerdo: Branding Assimétrico */}
       <div className="relative hidden w-1/2 flex-col justify-between bg-primary p-12 text-primary-foreground lg:flex">
         <div className="z-10">
-          <div className="mb-8 flex h-20 w-20 items-center justify-center border-2 border-primary-foreground bg-transparent">
-            <span className="text-3xl font-bold">B.S.S</span>
+          <div className="justify- center mb-8 flex h-20 w-20 items-center rounded-2xl border-2 border-primary-foreground bg-transparent">
+            <span className="text-3xl font-bold">B.S.P</span>
           </div>
           <h1 className="font-heading text-6xl leading-tight font-black tracking-tighter uppercase">
-            Barber <br /> Shop <br /> System
+            Barber <br /> Shop <br /> Pro
           </h1>
         </div>
 
