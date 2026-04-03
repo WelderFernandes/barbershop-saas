@@ -19,8 +19,9 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import Image from "next/image"
 
-export function OrganizationSwitcher() {
+export function OrganizationSwitcher({ logoUrl }: { logoUrl?: string | null }) {
   const { data: session } = authClient.useSession()
   const { data: organizations, isPending } = authClient.useListOrganizations()
   const activeOrg = organizations?.find(
@@ -50,14 +51,25 @@ export function OrganizationSwitcher() {
             className="group h-14 w-full justify-between rounded-lg border border-primary/20 bg-background px-4 font-mono text-[10px] tracking-widest uppercase transition-all hover:bg-accent"
           >
             <div className="flex items-center gap-3 overflow-hidden">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-primary bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                <HugeiconsIcon icon={Home01Icon} className="h-4 w-4" />
+              <div className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-primary/20 bg-primary/5 text-primary transition-all group-hover:border-primary/40 group-hover:bg-primary/10">
+                {logoUrl ? (
+                  <Image
+                    src={logoUrl}
+                    alt="Logo"
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <HugeiconsIcon icon={Home01Icon} className="h-4 w-4" />
+                )}
               </div>
               <div className="flex flex-col items-start overflow-hidden">
-                <span className="truncate font-bold tracking-tighter">
+                <span className="truncate text-[11px] font-black uppercase tracking-tighter">
                   {activeOrg?.name ?? "Selecionar Unidade"}
                 </span>
-                <span className="text-[8px] opacity-50">Unidade Ativa</span>
+                <span className="text-[8px] font-bold uppercase tracking-widest opacity-40">
+                  Unidade Ativa
+                </span>
               </div>
             </div>
             <HugeiconsIcon

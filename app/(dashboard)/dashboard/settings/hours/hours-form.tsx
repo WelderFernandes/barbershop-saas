@@ -5,7 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { updateBusinessHours } from "@/lib/actions/availability";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { CheckmarkBadge01Icon, FloppyDiskIcon } from "@hugeicons/core-free-icons";
+import { 
+  CheckmarkBadge01Icon, 
+  FloppyDiskIcon, 
+  InformationCircleIcon 
+} from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
 
 const DAYS_OF_WEEK = [
@@ -67,8 +71,10 @@ export function HoursForm({ initialData }: HoursFormProps) {
           <div 
             key={day.dayOfWeek}
             className={cn(
-              "flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-2xl border transition-all",
-              day.isActive ? "bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700" : "bg-slate-50 dark:bg-slate-900 border-transparent opacity-60"
+              "flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 rounded-[32px] border transition-all duration-500",
+              day.isActive 
+                ? "bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border-white/20 dark:border-slate-800/20 shadow-sm hover:shadow-xl hover:bg-white/80 dark:hover:bg-slate-900/80" 
+                : "bg-muted/10 border-transparent opacity-30 grayscale-[0.5]"
             )}
           >
             <div className="flex items-center gap-4 min-w-[140px] mb-3 sm:mb-0">
@@ -95,14 +101,14 @@ export function HoursForm({ initialData }: HoursFormProps) {
                     type="time" 
                     value={day.openTime || "08:00"} 
                     onChange={(e) => handleChange(day.dayOfWeek, "openTime", e.target.value)}
-                    className="h-10 w-28 rounded-xl border-slate-200 dark:border-slate-700 font-bold text-center"
+                    className="h-12 w-28 rounded-2xl bg-white/40 dark:bg-slate-950/20 border-white/30 dark:border-slate-800/50 font-black text-center focus:ring-accent backdrop-blur-sm shadow-inner"
                   />
-                  <span className="text-slate-400 font-bold">até</span>
+                  <span className="text-muted-foreground font-black text-[9px] uppercase tracking-[0.2em] px-2 opacity-50">até</span>
                   <Input 
                     type="time" 
                     value={day.closeTime || "18:00"} 
                     onChange={(e) => handleChange(day.dayOfWeek, "closeTime", e.target.value)}
-                    className="h-10 w-28 rounded-xl border-slate-200 dark:border-slate-700 font-bold text-center"
+                    className="h-12 w-28 rounded-2xl bg-white/40 dark:bg-slate-950/20 border-white/30 dark:border-slate-800/50 font-black text-center focus:ring-accent backdrop-blur-sm shadow-inner"
                   />
                 </>
               ) : (
@@ -114,7 +120,10 @@ export function HoursForm({ initialData }: HoursFormProps) {
       </div>
 
       <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-800">
-        <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Configuração salvas automaticamente no banco</p>
+        <div className="flex items-center gap-2 text-muted-foreground">
+            <HugeiconsIcon icon={InformationCircleIcon} className="w-4 h-4" />
+            <p className="text-[10px] font-bold uppercase tracking-widest leading-none">Alterações imediatas</p>
+        </div>
         <Button 
           onClick={handleSave} 
           disabled={isPending}

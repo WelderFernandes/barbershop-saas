@@ -18,12 +18,7 @@ export default async function HoursSettingsPage() {
   ]);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-black uppercase tracking-tight">Horários & Agenda</h1>
-        <p className="text-slate-500 font-medium">Gerencie o funcionamento da barbearia e bloqueios de profissionais.</p>
-      </div>
-
+    <div className="space-y-8 animate-in fade-in duration-700">
       <div className="grid gap-8 lg:grid-cols-12">
         {/* Lado Esquerdo: Horário Semanal */}
         <div className="lg:col-span-12 xl:col-span-7 space-y-6">

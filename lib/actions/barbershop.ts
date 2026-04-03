@@ -2,25 +2,19 @@
 
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { getSession } from "@/lib/tenant";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { getSession, requireTenant } from "@/lib/tenant";
 
 // ═══════════════════════════════════════════════════════
 // Schemas de validação
 // ═══════════════════════════════════════════════════════
-
-const createBarbershopSchema = z.object({
-  name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
-  phone: z.string().optional(),
-  address: z.string().optional(),
-});
 
 const updateBarbershopSchema = z.object({
   id: z.string(),
   name: z.string().min(2).optional(),
   phone: z.string().optional(),
   address: z.string().optional(),
+  logoUrl: z.string().optional(),
+  coverUrl: z.string().optional(),
 });
 
 // ═══════════════════════════════════════════════════════
@@ -31,7 +25,20 @@ const updateBarbershopSchema = z.object({
  * Cria uma nova barbearia + organização no Better Auth.
  * Chamado durante o onboarding do owner.
  */
-export async function createBarbershop(
+export async function getBarbershop() {
+  const { tenantId } = await requireTenant();
+  
+  const barbershop = await prisma.barbershop.findUnique({
+    where: { id: tenantId },
+  });
+
+  if (!barbershop) throw new Error("Barbearia não encontrada");
+
+  return barbershop;
+}
+
+/**
+ * Cria uma nova barbearia + organização no Better Auth.
   input: z.infer<typeof createBarbershopSchema>
 ) {
   const session = await getSession();
@@ -114,6 +121,8 @@ export async function updateBarbershop(
       ...(data.name && { name: data.name }),
       ...(data.phone !== undefined && { phone: data.phone }),
       ...(data.address !== undefined && { address: data.address }),
+      ...(data.logoUrl !== undefined && { logoUrl: data.logoUrl }),
+      ...(data.coverUrl !== undefined && { coverUrl: data.coverUrl }),
     },
   });
 

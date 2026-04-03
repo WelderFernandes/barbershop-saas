@@ -32,7 +32,7 @@ const navItems = [
   { title: "Configurações", href: "/dashboard/settings", icon: "⚙️" },
 ]
 
-export function AppSidebar() {
+export function AppSidebar({ barbershop }: { barbershop: { logoUrl: string | null } | null }) {
   const pathname = usePathname()
   const router = useRouter()
   const { data: session } = useSession()
@@ -58,7 +58,7 @@ export function AppSidebar() {
   return (
     <Sidebar className="border-r-0 ring-1 ring-border">
       <SidebarHeader className="border-b border-border/50 bg-sidebar px-4 pt-6 pb-4">
-        <OrganizationSwitcher />
+        <OrganizationSwitcher logoUrl={barbershop?.logoUrl} />
       </SidebarHeader>
 
       <SidebarContent className="bg-sidebar px-2 py-4">

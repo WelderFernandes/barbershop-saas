@@ -5,15 +5,19 @@ import {
 } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { Separator } from "@/components/ui/separator"
+import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler"
+import { getBarbershop } from "@/lib/actions/barbershop"
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const barbershop = await getBarbershop().catch(() => null);
+
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar barbershop={barbershop} />
       <SidebarInset className="bg-background">
         <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-background/80 px-6 backdrop-blur-md transition-all">
           <SidebarTrigger className="-ml-1 w-9 rounded-none hover:bg-accent" />
@@ -27,8 +31,7 @@ export default function DashboardLayout({
               Barber <span className="text-foreground">Shop</span> PRO
             </h1>
             <div className="flex items-center gap-2 font-mono text-[10px] tracking-tighter text-muted-foreground uppercase">
-              <span className="h-2 w-2 animate-pulse bg-emerald-500" />
-              Sistema Online
+              <AnimatedThemeToggler />
             </div>
           </div>
         </header>
