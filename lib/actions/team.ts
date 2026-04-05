@@ -155,7 +155,9 @@ export async function getOrganizationMembers() {
       user: {
         select: { id: true, name: true, email: true, image: true },
       },
+      team: true,
     },
+
     orderBy: { createdAt: "asc" },
   });
 }
