@@ -11,6 +11,7 @@ import { getSession, requireTenant } from "@/lib/tenant";
 const updateBarbershopSchema = z.object({
   id: z.string(),
   name: z.string().min(2).optional(),
+  description: z.string().optional(),
   phone: z.string().optional(),
   address: z.string().optional(),
   logoUrl: z.string().optional(),
@@ -119,6 +120,7 @@ export async function updateBarbershop(
     where: { id: data.id },
     data: {
       ...(data.name && { name: data.name }),
+      ...(data.description !== undefined && { description: data.description }),
       ...(data.phone !== undefined && { phone: data.phone }),
       ...(data.address !== undefined && { address: data.address }),
       ...(data.logoUrl !== undefined && { logoUrl: data.logoUrl }),
