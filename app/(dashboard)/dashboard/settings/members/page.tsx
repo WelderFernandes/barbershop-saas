@@ -1,7 +1,9 @@
 import { getOrganizationMembers, getTeams } from "@/lib/actions/team";
 import { listInvitations } from "@/lib/actions/invite";
 import { InviteMemberDialog } from "@/components/dashboard/invite-member-dialog";
+import { InviteRowActions } from "@/components/dashboard/invite-row-actions";
 import { UserGroupIcon, Tag01Icon, Clock01Icon } from "@hugeicons/core-free-icons";
+
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -99,11 +101,15 @@ export default async function MembersPage() {
                 <Card key={invite.id} className="border-white/5 bg-slate-900/60 backdrop-blur-xl">
                   <CardContent className="p-4 space-y-3">
                     <div className="flex items-center justify-between">
-                       <p className="font-mono text-[10px] font-bold text-white truncate max-w-[150px]">{invite.email}</p>
-                       <Badge variant="secondary" className="text-[7px] font-black uppercase h-4 bg-amber-500/10 text-amber-500 border-amber-500/20">
-                          Pendente
-                       </Badge>
+                       <div className="flex items-center gap-2">
+                          <p className="font-mono text-[10px] font-bold text-white truncate max-w-[150px]">{invite.email}</p>
+                          <Badge variant="secondary" className="text-[7px] font-black uppercase h-4 bg-amber-500/10 text-amber-500 border-amber-500/20">
+                             Pendente
+                          </Badge>
+                       </div>
+                       <InviteRowActions invitationId={invite.id} />
                     </div>
+
                     <div className="flex items-center gap-2 text-[9px] text-muted-foreground font-bold uppercase tracking-tighter">
                        <HugeiconsIcon icon={Tag01Icon} className="h-3 w-3" />
                        {invite.role}

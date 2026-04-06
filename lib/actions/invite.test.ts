@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest"
-import { createInvite } from "@/lib/actions/invite"
+import { createInvite, deleteInvitationAction } from "@/lib/actions/invite"
 import { prisma } from "@/lib/prisma"
 import { requireTenant } from "@/lib/tenant"
 
@@ -26,8 +26,9 @@ vi.mock("@/lib/tenant", () => ({
 vi.mock("@/lib/auth", () => ({
   auth: {
     api: {
-      inviteMember: vi.fn(),
-      acceptInvite: vi.fn(),
+      createInvitation: vi.fn(),
+      acceptInvitation: vi.fn(),
+      cancelInvitation: vi.fn(),
     },
   },
 }))
@@ -67,9 +68,10 @@ describe("Ações de Convite (Invite Actions)", () => {
       })
 
       const { auth } = await import("@/lib/auth")
-      ;(auth.api.inviteMember as Mock).mockResolvedValue({
+      ;(auth.api.createInvitation as unknown as Mock).mockResolvedValue({
         id: mockInvitationId,
       })
+
 
       const result = await createInvite(
         mockInviteData.email,
@@ -78,7 +80,7 @@ describe("Ações de Convite (Invite Actions)", () => {
       )
 
       // Verificando chamada ao Better Auth
-      expect(auth.api.inviteMember).toHaveBeenCalled()
+      expect(auth.api.createInvitation).toHaveBeenCalled()
 
       // Verificando vinculação do time no Prisma
       expect(prisma.invitation.update).toHaveBeenCalledWith({
@@ -94,6 +96,32 @@ describe("Ações de Convite (Invite Actions)", () => {
       await expect(createInvite("test@example.com", "member")).rejects.toThrow(
         "Permissão insuficiente"
       )
+    })
+  });
+
+  describe("deleteInvitationAction", () => {
+    it("deve cancelar o convite no Better Auth", async () => {
+      const mockInvitationId = "invite-123"
+
+      // Mock de permissão de admin
+      ;(prisma.member.findFirst as Mock).mockResolvedValue({
+        id: "admin-1",
+        role: "admin",
+      })
+
+      const { auth } = await import("@/lib/auth")
+      ;(auth.api.cancelInvitation as unknown as Mock).mockResolvedValue({ success: true })
+
+      const result = await deleteInvitationAction(mockInvitationId)
+
+
+      // Verificando chamada ao Better Auth
+      expect(auth.api.cancelInvitation).toHaveBeenCalledWith({
+        body: { invitationId: mockInvitationId },
+        headers: expect.anything(),
+      })
+
+      expect(result.success).toBe(true)
     })
   })
 })

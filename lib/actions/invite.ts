@@ -46,7 +46,7 @@ export async function createInvite(
 
   // 1. Criar convite no Better Auth (ele processa o e-mail via auth.ts)
   // Nota: Usamos auth.api.inviteMember conforme documentação oficial do plugin de organização
-  const invitation = await auth.api.inviteMember({
+  const invitation = await auth.api.createInvitation({
     body: {
       email: validated.email,
       role: validated.role,
@@ -80,7 +80,7 @@ export async function acceptInvitationAction(invitationId: string) {
 
   // 2. Aceitar no Better Auth (isso cria o registro Member)
   try {
-    await auth.api.acceptInvite({
+    await auth.api.acceptInvitation({
       body: { invitationId },
       headers: await headers(),
     })
@@ -109,15 +109,56 @@ export async function acceptInvitationAction(invitationId: string) {
   return { success: true }
 }
 
+export async function deleteInvitationAction(invitationId: string) {
+  const { session } = await requireTenant()
+  const organizationId = session.session.activeOrganizationId
+  const userId = session.user.id
+
+  if (!organizationId) throw new Error("Organização não ativa")
+
+  // Verificar permissão (Apenas Owner/Admin podem deletar/cancelar convites)
+  const inviterMember = await prisma.member.findFirst({
+    where: {
+      userId,
+      organizationId: organizationId as string,
+      role: { in: ["admin", "owner"] },
+    },
+  })
+
+  if (!inviterMember) throw new Error("Permissão insuficiente")
+
+  // Cancelar no Better Auth
+  try {
+    await auth.api.cancelInvitation({
+      body: { invitationId },
+      headers: await headers(),
+    })
+  } catch (error) {
+    console.error("Erro ao cancelar convite:", error)
+    throw new Error("Falha ao revogar convite")
+  }
+
+  // Opcional: Se queremos deleção física, poderíamos fazer prisma.invitation.delete aqui.
+  // Como o Better Auth apenas muda o status por padrão, vamos deixar assim para manter auditoria,
+  // mas o 'listInvitations' filtrará.
+
+  return { success: true }
+}
+
 export async function listInvitations() {
+
   const { session } = await requireTenant()
   const organizationId = session.session.activeOrganizationId
 
   if (!organizationId) throw new Error("Organização não ativa")
 
   return prisma.invitation.findMany({
-    where: { organizationId: organizationId as string },
+    where: { 
+      organizationId: organizationId as string,
+      status: "pending" 
+    },
     include: { team: true },
     orderBy: { createdAt: "desc" },
   })
 }
+
