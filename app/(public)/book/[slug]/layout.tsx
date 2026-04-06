@@ -14,7 +14,7 @@ export default function PublicBookingLayout({
 }) {
   return (
     <div className={cn("min-h-screen bg-[#F2F2F7] dark:bg-black font-sans antialiased", poppins.variable)}>
-      <main className="mx-auto max-w-md px-4 pb-12 pt-8">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 pb-12 pt-8">
         {children}
       </main>
     </div>
