@@ -215,7 +215,7 @@ export function BookingClient({ barbershop, services, barbers }: Props) {
 
         {/* STEP 2: BARBERS */}
         {step === 2 && (
-          <div className="grid animate-in grid-cols-2 gap-4 fade-in slide-in-from-right-4">
+          <div className="grid animate-in grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 fade-in slide-in-from-right-4">
             {barbers.map((barber) => (
               <Card
                 key={barber.id}
@@ -316,7 +316,7 @@ export function BookingClient({ barbershop, services, barbers }: Props) {
                     </span>
                   </div>
                 ) : availableSlots.length > 0 ? (
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {availableSlots.map((time) => (
                       <button
                         key={time}
@@ -421,7 +421,7 @@ export function BookingClient({ barbershop, services, barbers }: Props) {
             </div>
 
             <Button
-              className="h-20 w-full rounded-[40px] text-xl font-black tracking-widest uppercase shadow-2xl shadow-slate-900/20 transition-all active:scale-95"
+              className="h-16 sm:h-20 w-full rounded-2xl sm:rounded-[40px] text-lg sm:text-xl font-black tracking-widest uppercase shadow-2xl shadow-slate-900/20 transition-all active:scale-95 cursor-pointer"
               onClick={handleFinish}
               disabled={isPending || !name || !phone}
             >
