@@ -1,7 +1,7 @@
 import { getPublicBarbershopData } from "@/lib/actions/public-booking"
 import { notFound } from "next/navigation"
 import { BookingClient } from "../booking-client"
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 import Link from "next/link"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { ArrowLeft01Icon } from "@hugeicons/core-free-icons"

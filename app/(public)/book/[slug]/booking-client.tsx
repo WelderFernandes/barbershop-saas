@@ -16,7 +16,13 @@ import { createPublicAppointment } from "@/lib/actions/public-booking"
 import { getAvailableSlots } from "@/lib/actions/availability"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { cn, formatDate, formatDayOfWeek, formatDayOfMonth } from "@/lib/utils"
+import {
+  cn,
+  formatDate,
+  formatDayOfWeek,
+  formatDayOfMonth,
+  formatPhone,
+} from "@/lib/utils"
 import Image from "next/image"
 
 type Service = {
@@ -215,7 +221,7 @@ export function BookingClient({ barbershop, services, barbers }: Props) {
 
         {/* STEP 2: BARBERS */}
         {step === 2 && (
-          <div className="grid animate-in grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 fade-in slide-in-from-right-4">
+          <div className="grid animate-in grid-cols-1 gap-3 fade-in slide-in-from-right-4 sm:grid-cols-2 sm:gap-4">
             {barbers.map((barber) => (
               <Card
                 key={barber.id}
@@ -316,7 +322,7 @@ export function BookingClient({ barbershop, services, barbers }: Props) {
                     </span>
                   </div>
                 ) : availableSlots.length > 0 ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                     {availableSlots.map((time) => (
                       <button
                         key={time}
@@ -412,16 +418,16 @@ export function BookingClient({ barbershop, services, barbers }: Props) {
                 </Label>
                 <Input
                   id="cust-phone"
-                  placeholder="(11) 99999-9999"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="(11) 99999 9999"
+                  value={formatPhone(phone)}
+                  onChange={(e) => setPhone(formatPhone(e.target.value) || "")}
                   className="h-14 rounded-3xl border-2 border-slate-200 bg-white px-6 font-bold dark:border-slate-800 dark:bg-slate-800"
                 />
               </div>
             </div>
 
             <Button
-              className="h-16 sm:h-20 w-full rounded-2xl sm:rounded-[40px] text-lg sm:text-xl font-black tracking-widest uppercase shadow-2xl shadow-slate-900/20 transition-all active:scale-95 cursor-pointer"
+              className="h-16 w-full cursor-pointer rounded-2xl text-lg font-black tracking-widest uppercase shadow-2xl shadow-slate-900/20 transition-all active:scale-95 sm:h-20 sm:rounded-[40px] sm:text-xl"
               onClick={handleFinish}
               disabled={isPending || !name || !phone}
             >
