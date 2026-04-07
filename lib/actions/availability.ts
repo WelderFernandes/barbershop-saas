@@ -136,7 +136,7 @@ export async function createBlockedSlot(
 
   if (conflicts.length > 0) {
     const list = conflicts
-      .map((c) => `${c.clientName} (${c.service.name}) com ${c.barber.name}`)
+      .map((c: any) => `${c.clientName} (${c.service.name}) com ${c.barber.name}`)
       .join(", ");
     throw new Error(`Conflito com agendamentos existentes: ${list}. Resolva-os antes de bloquear.`);
   }
@@ -253,11 +253,11 @@ export async function getAvailableSlots(params: {
 
     // Validar se o slot está livre de agendamentos
     const isAppointed = appointments.some(
-      (app) => app.date.getHours() === currentTime.getHours() && app.date.getMinutes() === currentTime.getMinutes()
+      (app: any) => app.date.getHours() === currentTime.getHours() && app.date.getMinutes() === currentTime.getMinutes()
     );
 
     // Validar se o slot está livre de bloqueios (simplificado)
-    const isBlocked = blockedSlots.some((slot) => {
+    const isBlocked = blockedSlots.some((slot: any) => {
       const slotStart = new Date(currentTime);
       const slotEnd = new Date(currentTime);
       slotEnd.setMinutes(slotEnd.getMinutes() + 30);

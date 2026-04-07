@@ -51,7 +51,7 @@ export default async function MembersPage() {
           </h2>
           
           <div className="space-y-3">
-            {members.map((member) => (
+            {members.map((member: any) => (
               <Card key={member.id} className="border-white/5 bg-slate-900/40 backdrop-blur-md transition-all hover:border-primary/20">
                 <CardContent className="p-4 flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -97,7 +97,7 @@ export default async function MembersPage() {
                 <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Sem convites pendentes</p>
               </div>
             ) : (
-              invitations.map((invite) => (
+              invitations.map((invite: any) => (
                 <Card key={invite.id} className="border-white/5 bg-slate-900/60 backdrop-blur-xl">
                   <CardContent className="p-4 space-y-3">
                     <div className="flex items-center justify-between">

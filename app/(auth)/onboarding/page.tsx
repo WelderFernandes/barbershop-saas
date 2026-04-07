@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { createBarbershop } from "@/lib/actions/barbershop"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -21,6 +20,7 @@ import {
 } from "@/components/ui/input-group"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Store01Icon } from "@hugeicons/core-free-icons"
+import { createBarbershop } from "@/lib/actions/barbershop"
 
 export default function OnboardingPage() {
   const router = useRouter()

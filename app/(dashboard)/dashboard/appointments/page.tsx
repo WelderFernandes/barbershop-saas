@@ -14,32 +14,32 @@ export default async function AppointmentsPage() {
   ]);
 
   // Serialize dates for client component
-  const serializedAppointments = appointments.map((apt) => ({
+  const serializedAppointments = appointments.map((apt: any) => ({
     ...apt,
     date: apt.date.toISOString(),
     createdAt: apt.createdAt.toISOString(),
     updatedAt: apt.updatedAt.toISOString(),
   }));
 
-  const serializedBarbers = barbers.map((b) => ({
+  const serializedBarbers = barbers.map((b: any) => ({
     ...b,
     createdAt: b.createdAt.toISOString(),
     updatedAt: b.updatedAt.toISOString(),
   }));
 
-  const serializedServices = services.map((s) => ({
+  const serializedServices = services.map((s: any) => ({
     ...s,
     createdAt: s.createdAt.toISOString(),
     updatedAt: s.updatedAt.toISOString(),
   }));
 
-  const serializedBlockedSlots = blockedSlots.map((s) => ({
+  const serializedBlockedSlots = blockedSlots.map((s: any) => ({
     ...s,
     startTime: s.startTime.toISOString(),
     endTime: s.endTime.toISOString(),
   }));
 
-  const serializedBusinessHours = businessHours.map((bh) => ({
+  const serializedBusinessHours = businessHours.map((bh: any) => ({
     ...bh,
   }));
 

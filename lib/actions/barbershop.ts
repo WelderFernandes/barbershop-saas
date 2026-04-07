@@ -1,12 +1,20 @@
 "use server";
 
 import { z } from "zod";
+import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 import { getSession, requireTenant } from "@/lib/tenant";
 
 // ═══════════════════════════════════════════════════════
 // Schemas de validação
 // ═══════════════════════════════════════════════════════
+
+const createBarbershopSchema = z.object({
+  name: z.string().min(2, "O nome deve ter pelo menos 2 caracteres"),
+  phone: z.string().optional(),
+  address: z.string().optional(),
+});
 
 const updateBarbershopSchema = z.object({
   id: z.string(),
@@ -40,6 +48,9 @@ export async function getBarbershop() {
 
 /**
  * Cria uma nova barbearia + organização no Better Auth.
+ * Chamado durante o onboarding do owner.
+ */
+export async function createBarbershop(
   input: z.infer<typeof createBarbershopSchema>
 ) {
   const session = await getSession();
